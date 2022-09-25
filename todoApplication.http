@@ -1,0 +1,25 @@
+GET http://localhost:3000/todos/?status=TO%20DO
+
+   [
+      {
+        id: 1,
+        todo: "Watch Movie",
+        priority: "LOW",
+        status: "TO DO"
+      },
+      ...
+    ]
+
+###
+
+GET http://localhost:3000/todos/?priority=HIGH
+
+[
+  {
+    id: 2,
+    todo: "Learn Node JS",
+    priority: "HIGH",
+    status: "IN PROGRESS"
+  },
+  ...
+]
