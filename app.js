@@ -33,31 +33,22 @@ const convertPlayerToResponseObject = (objectItem) => {
   return {};
 };
 
+const hasPriorityAndStatus = (requestQuery) => {
+  return (
+    requestQuery.priority !== undefined && requestQuery.status !== undefined
+  );
+};
 Express.get("/todos/", async (request, response) => {
-  const { status } = request.query;
-  const todoQuery = `select * from todo where status = ${status}`;
-  const responseQuery = await db.all(todoQuery);
-  response.send(responseQuery);
-  console.log(todo);
-});
-
-Express.get("/todos/", async (request, response) => {
-  const { priority } = request.query;
-  const todoQuery = `select * from todo where priority = ${priority}`;
-  const responseQuery = await db.all(todoQuery);
-  response.send(responseQuery);
-});
-
-Express.get("/todos/", async (request, response) => {
-  const { priority, status } = request.query;
-  const todoQuery = `select * from todo where priority = ${priority} and status = ${status}`;
-  const responseQuery = await db.all(todoQuery);
-  response.send(responseQuery);
-});
-
-Express.get("/todos/", async (request, response) => {
-  const { searchQ } = request.query;
-  const todoQuery = `select * from todo where search_q like "%${searchQ}%"`;
+  let data = null;
+  let todoQuery = "";
+  const { search_q = "", priority, status } = request.query;
+  switch (true) {
+    case hasPriorityAndStatus(request.query):
+      todoQuery = `select * from todo where todo like '%${search_q}%' and status = '${status}' and priority = '${priority}'`;
+      break;
+    default:
+      break;
+  }
   const responseQuery = await db.all(todoQuery);
   response.send(responseQuery);
 });
