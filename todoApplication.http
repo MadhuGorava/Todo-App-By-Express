@@ -51,6 +51,10 @@ GET http://localhost:3000/todos/?search_q=Play
 ]
 
 ###
+GET http://localhost:3000/todos/
+
+###
+
 GET http://localhost:3000/todos/2/
 
 {
@@ -62,6 +66,7 @@ GET http://localhost:3000/todos/2/
 
 ###
 POST http://localhost:3000/todos/
+Content-Type: application/json
 
 {
   "id": 10,

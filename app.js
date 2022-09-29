@@ -38,28 +38,96 @@ const hasPriorityAndStatus = (requestQuery) => {
     requestQuery.priority !== undefined && requestQuery.status !== undefined
   );
 };
+const hasPriorityAndStatusProperties = (requestQuery) => {
+  return (
+    requestQuery.priority !== undefined && requestQuery.status !== undefined
+  );
+};
+
+const hasPriorityProperty = (requestQuery) => {
+  return requestQuery.priority !== undefined;
+};
+
+const hasStatusProperty = (requestQuery) => {
+  return requestQuery.status !== undefined;
+};
+const hasSearchProperty = (requestQuery) => {
+  return requestQuery.search_q !== undefined;
+};
+
 Express.get("/todos/", async (request, response) => {
   let data = null;
-  let todoQuery = "";
-  const { search_q = "", priority, status } = request.query;
+  let getTodosQuery = "";
+  const { search_q = "", priority, status, category } = request.query;
+
   switch (true) {
-    case hasPriorityAndStatus(request.query):
-      todoQuery = `select * from todo where todo like '%${search_q}%' and status = '${status}' and priority = '${priority}'`;
+    //scenario 3
+    /**----------- has priority and status -------- */
+    case hasPriorityAndStatusProperties(request.query):
+      if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
+        if (
+          status === "TO DO" ||
+          status === "IN PROGRESS" ||
+          status === "DONE"
+        ) {
+          getTodosQuery = `SELECT * FROM todo  WHERE status = '${status}' AND priority = '${priority}';`;
+          data = await db.all(getTodosQuery);
+          response.send(data);
+        } else {
+          response.status(400);
+          response.send("Invalid Todo Status");
+        }
+      } else {
+        response.status(400);
+        response.send("Invalid Todo Priority");
+      }
+
+      break;
+    case hasPriorityProperty(request.query):
+      if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
+        getTodosQuery = `
+      SELECT * FROM todo WHERE priority = '${priority}';`;
+        data = await db.all(getTodosQuery);
+        response.send(data);
+      } else {
+        response.status(400);
+        response.send("Invalid Todo Priority");
+      }
+      break;
+
+    //scenario 1
+    /**-------------has only status ------------ */
+    case hasStatusProperty(request.query):
+      if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
+        getTodosQuery = `SELECT * FROM todo WHERE status = '${status}';`;
+        data = await db.all(getTodosQuery);
+        response.send(data);
+      } else {
+        response.status(400);
+        response.send("Invalid Todo Status");
+      }
+      break;
+    //has only search property
+    //scenario 4
+    case hasSearchProperty(request.query):
+      getTodosQuery = `select * from todo where todo like '%${search_q}%';`;
+      data = await db.all(getTodosQuery);
+      response.send(data);
       break;
     default:
+      getTodosQuery = `select * from todo;`;
+      data = await db.all(getTodosQuery);
+      response.send(data);
       break;
   }
-  const responseQuery = await db.all(todoQuery);
-  response.send(responseQuery);
 });
 
 Express.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
-  const todoQuery = `select * from todo where id = ${todoId}`;
-  const responseQuery = await db.all(todoQuery);
-  response.send(responseQuery);
+  const getQuery = `SELECT * FROM todo WHERE id = ${todoId}`;
+  const todoResponse = await db.get(getQuery);
+  response.send(todoResponse);
 });
-
 Express.post("/todos/", async (request, response) => {
   const { todoId, todo } = request.body;
   const { priority, status } = request.query;
