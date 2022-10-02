@@ -129,41 +129,40 @@ Express.get("/todos/:todoId/", async (request, response) => {
   response.send(todoResponse);
 });
 Express.post("/todos/", async (request, response) => {
-  const { todoId, todo } = request.body;
-  const { priority, status } = request.query;
-  const todoQuery = `insert into todo (id, todo, priority, status) values (${todoId}, '${todo}', '${priority}', '${status}')`;
-  await db.all(todoQuery);
+  const { id, todo, priority, status } = request.body;
+  const todoQuery = `insert into todo (id, todo, priority, status) values (${id}, '${todo}', '${priority}', '${status}')`;
+  await db.run(todoQuery);
   response.send("Todo Successfully Added");
 });
 
 Express.put("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
   const { status } = request.query;
-  const todoQuery = `update todo set status = '${status}' where todo_id = ${todoId}`;
-  await db.all(todoQuery);
+  const todoQuery = `update todo set status = '${status}' where id = ${todoId}`;
+  await db.run(todoQuery);
   response.send("Status Updated");
 });
 
 Express.put("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
   const { priority } = request.query;
-  const todoQuery = `update todo set priority = '${priority}' where todo_id = ${todoId}`;
-  await db.all(todoQuery);
+  const todoPriorityQuery = `update todo set priority = '${priority}' where id = ${todoId}`;
+  await db.run(todoPriorityQuery);
   response.send("Priority Updated");
 });
 
 Express.put("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
   const { todo } = request.body;
-  const todoQuery = `update todo set todo = '${todo}' where todo_id = ${todoId}`;
-  await db.all(todoQuery);
+  const todoTodoQuery = `update todo set todo = '${todo}' where id = ${todoId}`;
+  await db.run(todoTodoQuery);
   response.send("Todo Updated");
 });
 
 Express.delete("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
-  const todoQuery = `delete todo where todo_id = ${todoId}`;
-  await db.all(todoQuery);
+  const todoQuery = `delete from todo where id = ${todoId}`;
+  await db.get(todoQuery);
   response.send("Todo Deleted");
 });
 

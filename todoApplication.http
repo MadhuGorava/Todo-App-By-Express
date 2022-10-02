@@ -69,21 +69,21 @@ POST http://localhost:3000/todos/
 Content-Type: application/json
 
 {
-  "id": 10,
+  "id": 11,
   "todo": "Finalize event theme",
   "priority": "LOW",
   "status": "TO DO"
 }
 
 ### 
-PUT http://localhost:3000/todos/2/?status = DONE 
+PUT http://localhost:3000/todos/10/?status = DONE 
 
 {
   "status": "DONE"
 }
 
 ###
-PUT http://localhost:3000/todos/3/?priority=HIGH
+PUT http://localhost:3000/todos/4/?priority=HIGH
 
 {
   "priority": "HIGH"
@@ -91,11 +91,11 @@ PUT http://localhost:3000/todos/3/?priority=HIGH
 
 ###
 
-PUT http://localhost:3000/todos/4/
+PUT http://localhost:3000/todos/6/
 
 {
   "todo": "Some task"
 }
 
 ### 
-DELETE http://localhost:3000/todos/5/
+DELETE http://localhost:3000/todos/10/
