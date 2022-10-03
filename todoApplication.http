@@ -76,7 +76,7 @@ Content-Type: application/json
 }
 
 ### 
-PUT http://localhost:3000/todos/10/?status = DONE 
+PUT http://localhost:3000/todos/10/?status=DONE 
 
 {
   "status": "DONE"

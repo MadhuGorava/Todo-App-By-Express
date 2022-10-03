@@ -137,28 +137,30 @@ Express.post("/todos/", async (request, response) => {
 
 Express.put("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
-  const { status } = request.query;
-  const todoQuery = `update todo set status = '${status}' where id = ${todoId}`;
-  await db.run(todoQuery);
-  response.send("Status Updated");
+  let updateQuery = "";
+  const requestBody = request.body;
+  switch (true) {
+    case requestBody.status !== undefined:
+      updateQuery = "Status";
+      break;
+    case requestBody.priority !== undefined:
+      updateQuery = "Priority";
+      break;
+    case requestBody.todo !== undefined:
+      updateQuery = "Todo";
+      break;
+  }
+  const todoQuery = `SELECT * FROM todo WHERE id = ${todoId}`;
+  const previousTodo = await db.get(todoQuery);
+  const {
+    todo = previousTodo.todo,
+    status = previousTodo.status,
+    priority = previousTodo.priority,
+  } = request.body;
+  const updateTodoQuery = `UPDATE todo SET status = '${status}', priority = '${priority}', todo = '${todo}' WHERE id = ${todoId}`;
+  await db.run(updateTodoQuery);
+  response.send(`${updateQuery} Updated`);
 });
-
-Express.put("/todos/:todoId", async (request, response) => {
-  const { todoId } = request.params;
-  const { priority } = request.query;
-  const todoPriorityQuery = `update todo set priority = '${priority}' where id = ${todoId}`;
-  await db.run(todoPriorityQuery);
-  response.send("Priority Updated");
-});
-
-Express.put("/todos/:todoId", async (request, response) => {
-  const { todoId } = request.params;
-  const { todo } = request.body;
-  const todoTodoQuery = `update todo set todo = '${todo}' where id = ${todoId}`;
-  await db.run(todoTodoQuery);
-  response.send("Todo Updated");
-});
-
 Express.delete("/todos/:todoId", async (request, response) => {
   const { todoId } = request.params;
   const todoQuery = `delete from todo where id = ${todoId}`;
